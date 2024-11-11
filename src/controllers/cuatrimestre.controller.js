@@ -115,3 +115,92 @@ export const deleteCuatrimestre = (req, res) => {
         );
     });
 };
+
+// Obtener materias de un cuatrimestre específico
+export const getMateriasByCuatrimestre = (req, res) => {
+    const { cuatrimestre_id } = req.params;
+
+    db.getConnection((err, connection) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error al obtener conexión', error: err });
+        }
+
+        connection.query(`
+            SELECT id, nombre 
+            FROM materias 
+            WHERE id_cuatrimestre = ?;
+        `, [cuatrimestre_id], (error, results) => {
+            connection.release();   
+
+            if (error) {
+                return res.status(500).json({ message: 'Error al obtener materias', error });
+            }
+
+            res.status(200).json(results);
+        });
+    });
+};
+
+// Crear una nueva calificación para una materia y parcial específicos
+export const createCalificacion = (req, res) => {
+    const { id_materia, id_usuario, parcial, calificacion } = req.body;
+
+    db.getConnection((err, connection) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error al obtener conexión', error: err });
+        }
+
+        // Inserta la materia en la tabla de calificaciones del usuario
+        connection.query(`
+            INSERT INTO calificaciones (id_materia, materia, parcial, calificacion)
+            SELECT ?, nombre, ?, ?
+            FROM materias
+            WHERE id = ? AND id_cuatrimestre IN (SELECT id FROM cuatrimestres WHERE id_usuario = ?);
+        `, [id_materia, parcial, calificacion, id_materia, id_usuario], (error, result) => {
+            connection.release();
+
+            if (error) {
+                return res.status(500).json({ message: 'Error al agregar calificación', error });
+            }
+
+            res.status(201).json({ message: 'Calificación agregada exitosamente', id: result.insertId });
+        });
+    });
+};
+
+// Obtener las calificaciones de un alumno específico (por id_usuario)
+export const getCalificacionesByAlumno = (req, res) => {
+    const { id_usuario } = req.params; // Suponiendo que el id_usuario se pasa como parámetro
+
+    db.getConnection((err, connection) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error al obtener conexión', error: err });
+        }
+
+        // Realizar la consulta para obtener las materias con calificaciones del alumno
+        connection.query(`
+            SELECT c.id AS id_calificacion, 
+                   m.nombre AS materia, 
+                   c.parcial, 
+                   c.calificacion, 
+                   c.created_at
+            FROM calificaciones c
+            JOIN materias m ON c.id_materia = m.id
+            JOIN cuatrimestres cu ON m.id_cuatrimestre = cu.id
+            WHERE cu.id_usuario = ?
+            ORDER BY m.id_cuatrimestre, c.parcial;
+        `, [id_usuario], (error, results) => {
+            connection.release();
+
+            if (error) {
+                return res.status(500).json({ message: 'Error al obtener calificaciones', error });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({ message: 'No se encontraron calificaciones para este alumno' });
+            }
+
+            res.status(200).json(results); // Retornar las calificaciones del alumno
+        });
+    });
+};
