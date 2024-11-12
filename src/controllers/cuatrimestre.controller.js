@@ -169,7 +169,7 @@ export const createCalificacion = (req, res) => {
 };
 
 export const getCalificacionesByAlumno = (req, res) => {
-    const { id_usuario, cuatrimestreId } = req.params; // Recibiendo cuatrimestreId como parámetro
+    const { id_usuario, cuatrimestreId } = req.params;
     console.log("ID de usuario recibido:", id_usuario);
     console.log("ID de cuatrimestre recibido:", cuatrimestreId);
 
@@ -187,8 +187,8 @@ export const getCalificacionesByAlumno = (req, res) => {
             FROM calificaciones c
             JOIN materias m ON c.id_materia = m.id
             JOIN cuatrimestres cu ON m.id_cuatrimestre = cu.id
-            WHERE cu.id = ? AND c.id_usuario = ?
-            ORDER BY m.id_cuatrimestre, c.parcial;
+            WHERE cu.id = ? AND cu.id_usuario = ?
+            ORDER BY c.parcial;
         `, [cuatrimestreId, id_usuario], (error, results) => {
             connection.release();
             console.log("Resultados de la consulta:", results);
