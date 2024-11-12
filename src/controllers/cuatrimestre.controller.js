@@ -169,8 +169,9 @@ export const createCalificacion = (req, res) => {
 };
 
 export const getCalificacionesByAlumno = (req, res) => {
-    const { id_usuario } = req.params;
+    const { id_usuario, cuatrimestreId } = req.params; // Recibiendo cuatrimestreId como parámetro
     console.log("ID de usuario recibido:", id_usuario);
+    console.log("ID de cuatrimestre recibido:", cuatrimestreId);
 
     db.getConnection((err, connection) => {
         if (err) {
@@ -186,9 +187,9 @@ export const getCalificacionesByAlumno = (req, res) => {
             FROM calificaciones c
             JOIN materias m ON c.id_materia = m.id
             JOIN cuatrimestres cu ON m.id_cuatrimestre = cu.id
-            WHERE cu.id_usuario = ?
+            WHERE cu.id = ? AND c.id_usuario = ?  // Filtra por cuatrimestre y usuario
             ORDER BY m.id_cuatrimestre, c.parcial;
-        `, [id_usuario], (error, results) => {
+        `, [cuatrimestreId, id_usuario], (error, results) => {
             connection.release();
             console.log("Resultados de la consulta:", results);
 
@@ -197,7 +198,7 @@ export const getCalificacionesByAlumno = (req, res) => {
             }
 
             if (results.length === 0) {
-                return res.status(404).json({ message: 'No se encontraron calificaciones para este alumno' });
+                return res.status(404).json({ message: 'No se encontraron calificaciones para este alumno en este cuatrimestre' });
             }
 
             res.json(results);
