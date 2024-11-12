@@ -168,16 +168,15 @@ export const createCalificacion = (req, res) => {
     });
 };
 
-// Obtener las calificaciones de un alumno específico (por id_usuario)
 export const getCalificacionesByAlumno = (req, res) => {
-    const { id_usuario } = req.params; // Suponiendo que el id_usuario se pasa como parámetro
+    const { id_usuario } = req.params;
+    console.log("ID de usuario recibido:", id_usuario);
 
     db.getConnection((err, connection) => {
         if (err) {
             return res.status(500).json({ message: 'Error al obtener conexión', error: err });
         }
 
-        // Realizar la consulta para obtener las materias con calificaciones del alumno
         connection.query(`
             SELECT c.id AS id_calificacion, 
                    m.nombre AS materia, 
@@ -191,6 +190,7 @@ export const getCalificacionesByAlumno = (req, res) => {
             ORDER BY m.id_cuatrimestre, c.parcial;
         `, [id_usuario], (error, results) => {
             connection.release();
+            console.log("Resultados de la consulta:", results);
 
             if (error) {
                 return res.status(500).json({ message: 'Error al obtener calificaciones', error });
@@ -200,7 +200,7 @@ export const getCalificacionesByAlumno = (req, res) => {
                 return res.status(404).json({ message: 'No se encontraron calificaciones para este alumno' });
             }
 
-            res.status(200).json(results); // Retornar las calificaciones del alumno
+            res.status(200).json(results);
         });
     });
 };
