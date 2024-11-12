@@ -4,11 +4,22 @@ const mysql = require('mysql2');
 // Configurar el pool de conexiones a MySQL (con los datos de AWS)
 const pool = mysql.createPool({
 
+  /*
+  //Conexión a bd en localhost
+  host: 'localhost',
+  user: 'root',
+  password: 'B4ckintha2024NEW',
+  database: 'mobuteq',
+  port: '3306',
+  */
+
+  
   //Conexión a bd en AWS
   host: 'mobuteq.cxk8g0o2e0ju.us-east-2.rds.amazonaws.com',
   user: 'admin',
   password: 'B4ckintha2024NEW',
   database: 'mobuteq',
+  
 
   /*
   //Conexión a bd en Railway

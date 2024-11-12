@@ -9,6 +9,6 @@ router.get('/:id_usuario/:cuatrimestre_id', getCuatrimestre);
 router.delete('/:id_usuario/:cuatrimestre_id', deleteCuatrimestre);
 router.get('/:cuatrimestre_id/materias', getMateriasByCuatrimestre);
 router.post('/materias/calific', createCalificacion);
-router.get('/:id_usuario/calificaciones', getCalificacionesByAlumno);
+router.get('/calific/materias/:id_usuario', getCalificacionesByAlumno);
 
 export default router;

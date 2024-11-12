@@ -200,7 +200,7 @@ export const getCalificacionesByAlumno = (req, res) => {
                 return res.status(404).json({ message: 'No se encontraron calificaciones para este alumno' });
             }
 
-            res.status(200).json(results);
+            res.json(results);
         });
     });
 };
