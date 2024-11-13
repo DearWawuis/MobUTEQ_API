@@ -151,12 +151,12 @@ export const createCalificacion = (req, res) => {
 
         // Inserta la calificación en la tabla de calificaciones para un cuatrimestre específico
         connection.query(`
-            INSERT INTO calificaciones (id_materia, id_cuatrimestre, materia, parcial, calificacion)
-            SELECT m.id, c.id, m.nombre, ?, ?, ?
+            INSERT INTO calificaciones (id_materia, id_cuatrimestre, id_usuario, materia, parcial, calificacion)
+            SELECT m.id, c.id, ?, m.nombre, ?, ?
             FROM materias m
-            JOIN cuatrimestres c ON c.numero = ? AND c.id_usuario = ?
+            JOIN cuatrimestres c ON c.numero = ? AND c.id_usuario = ? 
             WHERE m.id = ?;
-        `, [parcial, calificacion, numero_cuatrimestre, id_usuario, id_materia], (error, result) => {
+        `, [id_usuario, parcial, calificacion, numero_cuatrimestre, id_usuario, id_materia], (error, result) => {
             connection.release();
 
             if (error) {
