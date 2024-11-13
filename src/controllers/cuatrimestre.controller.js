@@ -118,7 +118,7 @@ export const deleteCuatrimestre = (req, res) => {
 
 // Obtener materias de un cuatrimestre específico
 export const getMateriasByCuatrimestre = (req, res) => {
-    const { cuatrimestre_id } = req.params;
+    const { cuatrimestreNumero } = req.params;
 
     db.getConnection((err, connection) => {
         if (err) {
@@ -129,7 +129,7 @@ export const getMateriasByCuatrimestre = (req, res) => {
             SELECT id, nombre 
             FROM materias 
             WHERE id_cuatrimestre = ?;
-        `, [cuatrimestre_id], (error, results) => {
+        `, [cuatrimestreNumero], (error, results) => {
             connection.release();   
 
             if (error) {
