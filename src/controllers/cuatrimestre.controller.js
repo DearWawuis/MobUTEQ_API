@@ -141,22 +141,22 @@ export const getMateriasByCuatrimestre = (req, res) => {
     });
 };
 
-// Crear una nueva calificación para una materia y parcial específicos
 export const createCalificacion = (req, res) => {
-    const { id_materia, id_cuatrimestre, parcial, calificacion } = req.body;
+    const { id_materia, numero_cuatrimestre, parcial, calificacion, id_usuario } = req.body;
 
     db.getConnection((err, connection) => {
         if (err) {
             return res.status(500).json({ message: 'Error al obtener conexión', error: err });
         }
 
-        // Inserta la materia en la tabla de calificaciones del cuatrimestre específico
+        // Inserta la calificación en la tabla de calificaciones para un cuatrimestre específico
         connection.query(`
             INSERT INTO calificaciones (id_materia, id_cuatrimestre, materia, parcial, calificacion)
-            SELECT ?, ?, nombre, ?, ?
-            FROM materias
-            WHERE id = ? AND id_cuatrimestre = ?;
-        `, [id_materia, id_cuatrimestre, parcial, calificacion, id_materia, id_cuatrimestre], (error, result) => {
+            SELECT m.id, c.id, m.nombre, ?, ?, ?
+            FROM materias m
+            JOIN cuatrimestres c ON c.numero = ? AND c.id_usuario = ?
+            WHERE m.id = ?;
+        `, [parcial, calificacion, numero_cuatrimestre, id_usuario, id_materia], (error, result) => {
             connection.release();
 
             if (error) {
@@ -170,7 +170,7 @@ export const createCalificacion = (req, res) => {
 
 // Obtener calificaciones de un alumno en un cuatrimestre específico
 export const getCalificacionesByAlumno = (req, res) => {
-    const { id_usuario, cuatrimestreId } = req.params;
+    const { id_usuario, numero_cuatrimestre } = req.params;
 
     db.getConnection((err, connection) => {
         if (err) {
@@ -186,9 +186,9 @@ export const getCalificacionesByAlumno = (req, res) => {
             FROM calificaciones c
             JOIN materias m ON c.id_materia = m.id
             JOIN cuatrimestres cu ON c.id_cuatrimestre = cu.id
-            WHERE cu.id = ? AND cu.id_usuario = ?
+            WHERE cu.numero = ? AND cu.id_usuario = ?
             ORDER BY c.parcial;
-        `, [cuatrimestreId, id_usuario], (error, results) => {
+        `, [numero_cuatrimestre, id_usuario], (error, results) => {
             connection.release();
 
             if (error) {
