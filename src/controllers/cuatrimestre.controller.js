@@ -187,7 +187,7 @@ export const getCalificacionesByAlumno = (req, res) => {
             FROM calificaciones c
             JOIN materias m ON c.id_materia = m.id
             JOIN cuatrimestres cu ON m.id_cuatrimestre = cu.id
-            WHERE cu.id = ? AND cu.id_usuario = ?
+            WHERE cu.numero = ? AND cu.id_usuario = ?
             ORDER BY c.parcial;
         `, [cuatrimestreId, id_usuario], (error, results) => {
             connection.release();
