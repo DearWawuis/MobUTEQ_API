@@ -143,20 +143,20 @@ export const getMateriasByCuatrimestre = (req, res) => {
 
 // Crear una nueva calificación para una materia y parcial específicos
 export const createCalificacion = (req, res) => {
-    const { id_materia, id_usuario, parcial, calificacion } = req.body;
+    const { id_materia, id_cuatrimestre, parcial, calificacion } = req.body;
 
     db.getConnection((err, connection) => {
         if (err) {
             return res.status(500).json({ message: 'Error al obtener conexión', error: err });
         }
 
-        // Inserta la materia en la tabla de calificaciones del usuario
+        // Inserta la materia en la tabla de calificaciones del cuatrimestre específico
         connection.query(`
-            INSERT INTO calificaciones (id_materia, materia, parcial, calificacion)
-            SELECT ?, nombre, ?, ?
+            INSERT INTO calificaciones (id_materia, id_cuatrimestre, materia, parcial, calificacion)
+            SELECT ?, ?, nombre, ?, ?
             FROM materias
-            WHERE id = ? AND id_cuatrimestre IN (SELECT numero FROM cuatrimestres WHERE id_usuario = ?);
-        `, [id_materia, parcial, calificacion, id_materia, id_usuario], (error, result) => {
+            WHERE id = ? AND id_cuatrimestre = ?;
+        `, [id_materia, id_cuatrimestre, parcial, calificacion, id_materia, id_cuatrimestre], (error, result) => {
             connection.release();
 
             if (error) {
@@ -168,10 +168,9 @@ export const createCalificacion = (req, res) => {
     });
 };
 
+// Obtener calificaciones de un alumno en un cuatrimestre específico
 export const getCalificacionesByAlumno = (req, res) => {
     const { id_usuario, cuatrimestreId } = req.params;
-    console.log("ID de usuario recibido:", id_usuario);
-    console.log("ID de cuatrimestre recibido:", cuatrimestreId);
 
     db.getConnection((err, connection) => {
         if (err) {
@@ -186,12 +185,11 @@ export const getCalificacionesByAlumno = (req, res) => {
                    c.created_at
             FROM calificaciones c
             JOIN materias m ON c.id_materia = m.id
-            JOIN cuatrimestres cu ON m.id_cuatrimestre = cu.id
-            WHERE cu.numero = ? AND cu.id_usuario = ?
+            JOIN cuatrimestres cu ON c.id_cuatrimestre = cu.id
+            WHERE cu.id = ? AND cu.id_usuario = ?
             ORDER BY c.parcial;
         `, [cuatrimestreId, id_usuario], (error, results) => {
             connection.release();
-            console.log("Resultados de la consulta:", results);
 
             if (error) {
                 return res.status(500).json({ message: 'Error al obtener calificaciones', error });
