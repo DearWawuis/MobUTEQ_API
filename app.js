@@ -10,19 +10,22 @@ const photoRoutes = require('./src/routes/photo.routes');
 const app = express();
 const cors = require('cors');
 
+// Configuración de CORS para permitir peticiones desde localhost
+const corsOptions = {
+  origin: '*',  // Permite solicitudes desde cualquier dominio
+  methods: ['GET', 'POST', 'DELETE'],  // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Encabezados permitidos
+};
+
+// Middleware para habilitar CORS (si es necesario)
+app.use(cors(corsOptions));
+// Ruta global para manejar solicitudes OPTIONS
+app.options('*', cors(corsOptions));
+
 // Configura el tamaño máximo de la carga (aquí está configurado a 10MB, pero puedes ajustarlo)
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
 
-// Configuración de CORS para permitir peticiones desde localhost
-const corsOptions = {
-    origin: '*',  // Permite solicitudes desde cualquier dominio
-    methods: ['GET', 'POST', 'DELETE'],  // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'],  // Encabezados permitidos
-  };
-  
-// Middleware para habilitar CORS (si es necesario)
-app.use(cors(corsOptions));
 // Middleware para parsear cuerpos de solicitud como JSON
 app.use(express.json());
 
