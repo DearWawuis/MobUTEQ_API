@@ -155,7 +155,9 @@ export const createCalificacion = (req, res) => {
             INSERT INTO calificaciones (id_materia, materia, parcial, calificacion)
             SELECT ?, nombre, ?, ?
             FROM materias
-            WHERE id = ? AND id_cuatrimestre IN (SELECT id FROM cuatrimestres WHERE id_usuario = ?);
+            WHERE id = ? AND id_cuatrimestre IN (
+                SELECT id FROM cuatrimestres WHERE id_usuario = ?
+            );
         `, [id_materia, parcial, calificacion, id_materia, id_usuario], (error, result) => {
             connection.release();
 
