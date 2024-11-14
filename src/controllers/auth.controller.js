@@ -41,7 +41,8 @@ exports.register = async (req, res) => {
   // Verificar si el correo existe usando la API de EmailListVerify
   try {
     const emailVerificationResponse = await axios.get(`https://apps.emaillistverify.com/api/verifEmail?secret=Q0VHB4FvAgqSRejl03Hoa&email=${email}`);
-    const isValidEmail = emailVerificationResponse.data.status === 'OK';
+    console.log(emailVerificationResponse.data);
+    const isValidEmail = emailVerificationResponse.data.valid;
 
     if (!isValidEmail) {
       return res.status(400).send({ message: 'El correo ingresado no existe. Por favor, verifica y prueba de nuevo.' });
