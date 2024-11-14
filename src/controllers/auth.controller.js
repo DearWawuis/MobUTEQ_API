@@ -38,14 +38,13 @@ exports.register = async (req, res) => {
     });
   }
 
-  // Verificar si el correo existe usando la API de EmailListVerify
+  // Verificar si el correo existe usando la API de ZeroBounce
   try {
-    const emailVerificationResponse = await axios.get(`https://apps.emaillistverify.com/api/verifEmail?secret=Q0VHB4FvAgqSRejl03Hoa&email=${email}`);
-    console.log(emailVerificationResponse.data);
-    const isValidEmail = emailVerificationResponse.data.valid;
+    const emailVerificationResponse = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=42cf6301f0f349898a17785add1367dc&email=${email}`);
+    const emailData = emailVerificationResponse.data;
 
-    if (!isValidEmail) {
-      return res.status(400).send({ message: 'El correo ingresado no existe. Por favor, verifica y prueba de nuevo.' });
+    if (emailData.status !== 'valid') {
+      return res.status(400).send({ message: 'El correo ingresado no es válido. Por favor, verifica y prueba de nuevo.' });
     }
   } catch (error) {
     return res.status(500).send({ message: 'Error al verificar el correo.' });
