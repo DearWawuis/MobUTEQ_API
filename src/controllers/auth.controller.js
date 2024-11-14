@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const validator = require('validator');
 const User = require('../models/User.model');
+const axios = require('axios');
 
 // Configurar nodemailer para enviar correos de confirmación
 const transporter = nodemailer.createTransport({
@@ -37,10 +38,22 @@ exports.register = async (req, res) => {
     });
   }
 
+  // Verificar si el correo existe usando la API de EmailListVerify
+  try {
+    const emailVerificationResponse = await axios.get(`https://apps.emaillistverify.com/api/verifEmail?secret=Q0VHB4FvAgqSRejl03Hoa&email=${email}`);
+    const isValidEmail = emailVerificationResponse.data.status === 'OK';
+
+    if (!isValidEmail) {
+      return res.status(400).send({ message: 'El correo ingresado no existe. Por favor, verifica y prueba de nuevo.' });
+    }
+  } catch (error) {
+    return res.status(500).send({ message: 'Error al verificar el correo.' });
+  }
+
   // Verificar si el correo ya está registrado
   User.findByEmail(email, async (err, results) => {
     if (err) {
-      return res.status(500).send({ message: 'Error al verificar el correo.' });
+      return res.status(500).send({ message: 'Error al verificar el correo en la base de datos.' });
     }
 
     if (results.length > 0) {
