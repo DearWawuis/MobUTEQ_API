@@ -6,6 +6,7 @@ import mapaRoutes from './src/routes/mapa.routes';
 import cuatriRoutes from './src/routes/cuatrimestre.routes';
 const connectDB = require('./src/config/db');
 const photoRoutes = require('./src/routes/photo.routes');
+import notificationRoutes from './src/routes/notification.routes';
 
 const app = express();
 const cors = require('cors');
@@ -39,6 +40,7 @@ app.use('/api/calendar', calendarRoutes);
 app.use('/api/mapa', mapaRoutes);
 app.use('/api/cuatrimestre', cuatriRoutes);
 app.use('/api/photo', photoRoutes);
+app.use('/api/notificacion', notificationRoutes);
 
 // Ruta para servir la SPA
 app.get('/', (req, res) => {
