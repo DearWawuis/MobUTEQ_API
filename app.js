@@ -15,7 +15,7 @@ const cors = require('cors');
 const corsOptions = {
   //origin: 'http://localhost:8100',  // Permite solicitudes desde el dominio de prueba
   origin: '*', //Permite solicitudes desde cualquier dominio
-  methods: ['GET', 'POST', 'DELETE'],  // Métodos permitidos
+  methods: ['GET', 'POST', 'DELETE', 'PUT'],  // Métodos permitidos
   allowedHeaders: ['Content-Type', 'Authorization'],  // Encabezados permitidos
 };
 
