@@ -7,6 +7,8 @@ import cuatriRoutes from './src/routes/cuatrimestre.routes';
 const connectDB = require('./src/config/db');
 const photoRoutes = require('./src/routes/photo.routes');
 import notificationRoutes from './src/routes/notification.routes';
+const notificationController = require('./src/controllers/notification.controller');
+const schedule = require('node-schedule');
 
 const app = express();
 const cors = require('cors');
@@ -32,7 +34,7 @@ app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
 app.use(express.json());
 
 // Conectar a la base de datos
-connectDB();
+//connectDB();
 
 app.use(express.json());
 app.use('/api', authRoutes);
@@ -41,6 +43,11 @@ app.use('/api/mapa', mapaRoutes);
 app.use('/api/cuatrimestre', cuatriRoutes);
 app.use('/api/photo', photoRoutes);
 app.use('/api/notificacion', notificationRoutes);
+
+schedule.scheduleJob('* * * * *', function() {
+  const datos = notificationController.getUpcomingEvents();
+  console.log(datos);
+});
 
 // Ruta para servir la SPA
 app.get('/', (req, res) => {
