@@ -43,11 +43,11 @@ app.use('/api/mapa', mapaRoutes);
 app.use('/api/cuatrimestre', cuatriRoutes);
 app.use('/api/photo', photoRoutes);
 app.use('/api/notificacion', notificationRoutes);
-
+/*
 schedule.scheduleJob('* * * * *', function() {
   const datos = notificationController.getUpcomingEvents();
   console.log(datos);
-});
+});*/
 
 // Ruta para servir la SPA
 app.get('/', (req, res) => {
