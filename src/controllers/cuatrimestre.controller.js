@@ -203,3 +203,30 @@ export const getCalificacionesByAlumno = (req, res) => {
         });
     });
 };
+
+// Verificar si ya existe una calificación para la materia y el parcial
+export const verificarCalificacionExistente = (req, res) => {
+    const { id_usuario, numero_cuatrimestre, id_materia, parcial } = req.body;
+
+    db.getConnection((err, connection) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error al obtener conexión', error: err });
+        }
+
+        connection.query(`
+            SELECT COUNT(*) AS count
+            FROM calificaciones c
+            JOIN cuatrimestres cu ON c.id_cuatrimestre = cu.id
+            WHERE cu.numero = ? AND cu.id_usuario = ? AND c.id_materia = ? AND c.parcial = ?;
+        `, [numero_cuatrimestre, id_usuario, id_materia, parcial], (error, results) => {
+            connection.release();
+
+            if (error) {
+                return res.status(500).json({ message: 'Error al verificar calificación', error });
+            }
+
+            const exists = results[0].count > 0;
+            res.json(exists);
+        });
+    });
+};
