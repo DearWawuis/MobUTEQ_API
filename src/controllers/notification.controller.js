@@ -4,7 +4,6 @@ const moment = require('moment');
 import dotenv from "dotenv";
 
 dotenv.config();
-console.log(process.env.FIREBASE_PROJECT_ID);
 const serviceAccount = {
   type: 'service_account',
   project_id: "mobuteq-2e154",
