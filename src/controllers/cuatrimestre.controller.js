@@ -232,7 +232,7 @@ export const verificarCalificacionExistente = (req, res) => {
 };
 
 // Obtener los 3 mejores usuarios
-exports.getTopUsers = (req, res) => {
+export const getTopUsers = (req, res) => {
     db.getConnection((err, connection) => {
         if (err) {
             return res.status(500).json({ message: 'Error al obtener conexión', error: err });
