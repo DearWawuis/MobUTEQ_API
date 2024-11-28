@@ -1,6 +1,5 @@
 import express from 'express';
-import { getCuatrimestres, createCuatrimestre, getCuatrimestre, deleteCuatrimestre, getMateriasByCuatrimestre, createCalificacion, getCalificacionesByAlumno, verificarCalificacionExistente } from '../controllers/cuatrimestre.controller';
-import { getTopUsers } from '../controllers/user.controller';
+import { getCuatrimestres, createCuatrimestre, getCuatrimestre, deleteCuatrimestre, getMateriasByCuatrimestre, createCalificacion, getCalificacionesByAlumno, verificarCalificacionExistente, getTopUsers } from '../controllers/cuatrimestre.controller';
 const router = express.Router();
 
 router.get('/:id_usuario', getCuatrimestres);
@@ -11,7 +10,6 @@ router.get('/materias/cuatri/:cuatrimestreNumero', getMateriasByCuatrimestre);
 router.post('/materias/calific', createCalificacion);
 router.get('/calific/materias/:id_usuario/:numero_cuatrimestre', getCalificacionesByAlumno);
 router.post('/calificaciones/verificar', verificarCalificacionExistente);
-
 router.get('/users/top3', getTopUsers);
 
 export default router;

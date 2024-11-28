@@ -230,3 +230,36 @@ export const verificarCalificacionExistente = (req, res) => {
         });
     });
 };
+
+// Obtener los 3 mejores usuarios
+exports.getTopUsers = (req, res) => {
+    db.getConnection((err, connection) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error al obtener conexión', error: err });
+        }
+
+        connection.query(`
+            SELECT 
+                u.id AS usuario_id,
+                u.nombre AS usuario_nombre,
+                AVG(c.calificacion) AS promedio
+            FROM 
+                usuarios u
+            JOIN 
+                calificaciones c ON u.id = c.id_usuario
+            GROUP BY 
+                u.id, u.nombre
+            ORDER BY 
+                promedio DESC
+            LIMIT 3;
+        `, (error, results) => {
+            connection.release(); // Liberar la conexión
+
+            if (error) {
+                return res.status(500).json({ message: 'Error al obtener los mejores usuarios', error });
+            }
+
+            res.json(results);
+        });
+    });
+};
