@@ -9,6 +9,7 @@ const photoRoutes = require('./src/routes/photo.routes');
 import notificationRoutes from './src/routes/notification.routes';
 const notificationController = require('./src/controllers/notification.controller');
 const schedule = require('node-schedule');
+import scheduleRoutes from './src/routes/schedule.routes';
 
 const app = express();
 const cors = require('cors');
@@ -43,6 +44,7 @@ app.use('/api/mapa', mapaRoutes);
 app.use('/api/cuatrimestre', cuatriRoutes);
 app.use('/api/photo', photoRoutes);
 app.use('/api/notificacion', notificationRoutes);
+app.use('/api/horario', scheduleRoutes);
 
 schedule.scheduleJob('* * * * *', function() {
   const datos = notificationController.getUpcomingEvents();
