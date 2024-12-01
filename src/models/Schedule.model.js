@@ -1,5 +1,5 @@
 const pool = require('./Db.model'); 
-
+const moment = require('moment');
 // Buscar horario
 exports.findScheduleToday = (user, callback) => {
   const today = new Date();
@@ -39,15 +39,15 @@ exports.findScheduleToday = (user, callback) => {
 
   //Buscar materia con clase ahora y la proxima
   exports.findScheduleNowAndNext = (day, user, callback) => {
+    const now = moment().format('HH:mm:ss');
     const sqlNow = `
       SELECT h.id, h.edificio, h.aula, h.hora_inicio, h.hora_fin, m.nombre, h.profesor
       FROM horario_clases AS h
       INNER JOIN materias as m ON m.id = h.id_materia
       WHERE h.id_usuario = ? 
         AND h.dia_semana = ? 
-        AND h.hora_inicio <= CURRENT_TIME 
-        AND h.hora_fin >= CURRENT_TIME
-      ORDER BY h.hora_inicio DESC
+         AND ? BETWEEN h.hora_inicio AND h.hora_fin
+      ORDER BY h.hora_inicio ASC
       LIMIT 1
     `;
   
@@ -58,18 +58,18 @@ exports.findScheduleToday = (user, callback) => {
       INNER JOIN materias as m ON m.id = h.id_materia
       WHERE h.id_usuario = ? 
         AND h.dia_semana = ? 
-        AND h.hora_inicio > CURRENT_TIME
+        AND h.hora_inicio > ?
       ORDER BY h.hora_inicio ASC
       LIMIT 1
     `;
   
     // Ejecutar ambas consultas
-    pool.query(sqlNow, [user, day], (errNow, resultNow) => {
+    pool.query(sqlNow, [user, day, now], (errNow, resultNow) => {
       if (errNow) {
         return callback(errNow);
       }
   
-      pool.query(sqlNext, [user, day], (errNext, resultNext) => {
+      pool.query(sqlNext, [user, day, now], (errNext, resultNext) => {
         if (errNext) {
           return callback(errNext);
         }
@@ -309,4 +309,3 @@ exports.findScheduleToday = (user, callback) => {
         
         });
       };
-
