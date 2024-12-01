@@ -7,6 +7,8 @@ router.get('/:user', scheduleController.getScheduleToday);
 
 router.get('/Details/:day/:user', scheduleController.getScheduleByDayAndUser);
 
+router.get('/VerifyCuatri/:user', scheduleController.verifyCuatri);
+
 router.get('/DetailsScheduleStatusNow/:day/:user', scheduleController.getScheduleNowAndNextClass);
 
 router.post('/AddSchedule/:user', scheduleController.addSchedule);
