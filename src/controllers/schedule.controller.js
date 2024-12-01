@@ -24,6 +24,67 @@ exports.getScheduleByDayAndUser = async (req, res) => {
 
 }
 
+exports.verifyCuatri = async (req, res) => {
+  const { user } = req.params;
+  try {
+  const sqlGetHighestCuatri = `
+  SELECT MAX(numero) AS max_cuatrimestre
+  FROM cuatrimestres
+  WHERE id_usuario = ?
+`;
+pool.query(sqlGetHighestCuatri, [user], (err, maxCuatriResult) => {
+  if (err) {
+    return res.status(400).send({ status: 'error', message: 'Error al obtener el cuatrimestre más alto' });
+  }
+  const highestCuatri = maxCuatriResult[0].max_cuatrimestre;
+  console.log(highestCuatri);
+  if (!highestCuatri) {
+    return res.status(201).send({ status: 'no hay', message: 'Ve a Home->Calificaciones y añade tu cuatrimestre actual' });
+  }
+
+  /*const sqlVerifyHorarios = `
+        SELECT hc.id
+        FROM horario_clases hc
+        JOIN materias m ON hc.id_materia = m.id
+        JOIN cuatrimestres c ON m.id_cuatrimestre = c.id
+        WHERE c.id_cuatrimestre = ? AND m.id_cuatrimestre = ? AND
+        hc.id_usuario = ?
+      `;*/
+      const sqlVerifyHorarios = `
+        SELECT hc.id
+        FROM horario_clases hc
+        JOIN materias m ON hc.id_materia = m.id
+        JOIN cuatrimestres c ON m.id_cuatrimestre = c.id
+        WHERE c.id = ? AND m.id_cuatrimestre = ? AND
+        hc.id_usuario = ?
+      `;
+      
+      pool.query(sqlVerifyHorarios, [highestCuatri, highestCuatri, user], (err, horarioResults) => {
+        if (err) {
+          return res.status(400).send({ status: 'error', message: 'Error al verificar horarios' });
+        }
+        if (horarioResults.length === 0) {
+          const sqlDeleteHorarios = `
+            DELETE FROM horario_clases
+            WHERE id_usuario = ?
+          `;
+          pool.query(sqlDeleteHorarios, [user], (err) => {
+            if (err) {
+              return res.status(400).send({ status: 'error', message: 'Error al eliminar horarios antiguos' });
+            }
+            return res.status(201).send({ status: 'agrega', message: 'Parace que tienes un nuevo cuatrimestre, registra tu horario' });
+          });
+        } else {
+          return res.status(201).send({status: 'ok',  message: 'Existen horarios para el cuatrimestre más alto. No es necesario eliminar.' });
+        }
+      });
+});
+} catch (err) {
+  console.error(err);
+  return res.status(500).send({ message: 'Error en el servidor' });
+}
+}
+
 exports.getScheduleNowAndNextClass = async (req, res) => {
     const { day, user } = req.params;
     Schedule.findScheduleNowAndNext(day, user, (err, results) => {
