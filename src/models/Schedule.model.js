@@ -1,5 +1,5 @@
 const pool = require('./Db.model'); 
-const moment = require('moment');
+const moment = require('moment-timezone');
 // Buscar horario
 exports.findScheduleToday = (user, callback) => {
   const today = new Date();
@@ -39,7 +39,7 @@ exports.findScheduleToday = (user, callback) => {
 
   //Buscar materia con clase ahora y la proxima
   exports.findScheduleNowAndNext = (day, user, callback) => {
-    const now = moment().format('HH:mm:ss');
+    const now = moment.tz('America/Mexico_City').format('HH:mm:ss');
     const sqlNow = `
       SELECT h.id, h.edificio, h.aula, h.hora_inicio, h.hora_fin, m.nombre, h.profesor
       FROM horario_clases AS h
